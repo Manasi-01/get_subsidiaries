@@ -118,9 +118,19 @@ def main():
                     # Display success message
                     st.success("Data fetched successfully! Click the button above to download the CSV file.")
                     
-                    # Display a preview of the data
+                    # Display a preview of the data (using the same column exclusion as in json_to_csv)
                     st.subheader("Data Preview")
                     df_preview = pd.json_normalize(data.get("subsidiaries", []))
+                    
+                    # Apply the same column exclusion as in json_to_csv
+                    columns_to_exclude = [
+                        'id', 'uId', 'dType', 'main_parent_id', 'record_update_date',
+                        'createdBy', 'createdAt', 'updatedBy', 'updatedAt', 'version',
+                        'active', 'archived', 'domains', 'validatedAt', '_rid', '_self',
+                        '_etag', '_attachments', '_ts'
+                    ]
+                    df_preview = df_preview.drop(columns=[col for col in columns_to_exclude if col in df_preview.columns], errors='ignore')
+                    
                     st.dataframe(df_preview.head())
 
 if __name__ == "__main__":
