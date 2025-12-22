@@ -30,7 +30,7 @@ def get_subsidiaries(parent_name):
 
 def json_to_csv(api_response, parent_identifier):
     """
-    Convert API response to CSV format in memory
+    Convert API response to CSV format in memory, excluding specified columns
     """
     try:
         # Check if we have a successful response with subsidiaries
@@ -46,6 +46,17 @@ def json_to_csv(api_response, parent_identifier):
             
         # Create a DataFrame from the subsidiaries list
         df = pd.json_normalize(subsidiaries)
+        
+        # Columns to exclude
+        columns_to_exclude = [
+            'id', 'uId', 'dType', 'main_parent_id', 'record_update_date',
+            'createdBy', 'createdAt', 'updatedBy', 'updatedAt', 'version',
+            'active', 'archived', 'domains', 'validatedAt', '_rid', '_self',
+            '_etag', '_attachments', '_ts'
+        ]
+        
+        # Remove the columns we want to exclude (if they exist)
+        df = df.drop(columns=[col for col in columns_to_exclude if col in df.columns], errors='ignore')
         
         # Create a StringIO buffer to store the CSV data
         output = BytesIO()
